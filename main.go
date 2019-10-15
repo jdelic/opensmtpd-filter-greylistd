@@ -12,7 +12,9 @@ import (
 	"strings"
 )
 
-type GreylistdFilter struct{}
+type GreylistdFilter struct{
+	opensmtpd.SessionTrackingFilter
+}
 
 
 func debug(format string, values... interface{}) {
@@ -59,14 +61,14 @@ func queryGreylistd(ip string, token string, sessionId string) {
 }
 
 
-func (g GreylistdFilter) LinkConnect(sessionId string, params []string) {
-	conn := params[2]
+func (g GreylistdFilter) TxBeginCallback(token string, session *opensmtpd.SMTPSession) {
+	conn := session.Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
 		return
 	} else {
 		src := strings.Split(conn, ":")[0]
-		go queryGreylistd(src, params[0], sessionId)
+		go queryGreylistd(src, token, session.Id)
 	}
 }
 
