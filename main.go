@@ -13,7 +13,8 @@ import (
 )
 
 type GreylistdFilter struct{
-	opensmtpd.SessionTrackingFilter
+	opensmtpd.FilterDef
+	opensmtpd.SessionTrackingMixin
 }
 
 
@@ -61,7 +62,7 @@ func queryGreylistd(ip string, token string, sessionId string) {
 }
 
 
-func (g GreylistdFilter) TxBeginCallback(token string, session *opensmtpd.SMTPSession) {
+func (g *GreylistdFilter) TxBeginCallback(sh opensmtpd.SessionHolder, token string, session *opensmtpd.SMTPSession) {
 	conn := session.Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
@@ -84,5 +85,6 @@ func main() {
 
 	debug("Greylistd Socket path is %s\n", *socketPath)
 
-	opensmtpd.Run(GreylistdFilter{})
+	glFilter := GreylistdFilter{}
+	glFilter.Run()
 }
