@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
@@ -13,8 +14,23 @@ import (
 )
 
 type GreylistdFilter struct{
-	opensmtpd.FilterDef
 	opensmtpd.SessionTrackingMixin
+}
+
+func (g *GreylistdFilter) GetCapabilities() opensmtpd.FilterDispatchMap {
+	return opensmtpd.GetCapabilities(g)
+}
+
+func (g *GreylistdFilter) Register() {
+	opensmtpd.Register(g)
+}
+
+func (g *GreylistdFilter) Dispatch(params []string) {
+	opensmtpd.Dispatch(g, params)
+}
+
+func (g *GreylistdFilter) ProcessConfig(scanner *bufio.Scanner) {
+	opensmtpd.ProcessConfig(g, scanner)
 }
 
 
@@ -62,14 +78,15 @@ func queryGreylistd(ip string, token string, sessionId string) {
 }
 
 
-func (g *GreylistdFilter) TxBeginCallback(sh opensmtpd.SessionHolder, token string, session *opensmtpd.SMTPSession) {
-	conn := session.Src
+func (g *GreylistdFilter) TxBegin(verb string, sh opensmtpd.SessionHolder, sessionId string, params []string) {
+	g.SessionTrackingMixin.TxBegin(verb, sh, sessionId, params)
+	conn := sh.GetSession(sessionId).Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
 		return
 	} else {
 		src := strings.Split(conn, ":")[0]
-		go queryGreylistd(src, token, session.Id)
+		go queryGreylistd(src, params[0], sessionId)
 	}
 }
 
@@ -85,6 +102,6 @@ func main() {
 
 	debug("Greylistd Socket path is %s\n", *socketPath)
 
-	glFilter := GreylistdFilter{}
-	glFilter.Run()
+	glFilter := &GreylistdFilter{}
+	opensmtpd.Run(glFilter)
 }
