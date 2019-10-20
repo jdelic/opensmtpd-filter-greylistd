@@ -16,10 +16,6 @@ type GreylistdFilter struct{
 	opensmtpd.SessionTrackingMixin
 }
 
-func (g *GreylistdFilter) TxCommit(string, opensmtpd.SessionHolder, string, []string) {
-	debug("TxCommit")
-}
-
 
 func debug(format string, values... interface{}) {
 	if *debugOutput {
@@ -65,7 +61,7 @@ func queryGreylistd(ip string, token string, sessionId string) {
 }
 
 
-func (g *GreylistdFilter) Connect(verb string, sh opensmtpd.SessionHolder, sessionId string, params []string) {
+func (g *GreylistdFilter) Connect(fw opensmtpd.FilterWrapper, verb string, sh opensmtpd.SessionHolder, sessionId string, params []string) {
 	debug("Connect")
 	conn := sh.GetSession(sessionId).Src
 	if conn[0:4] == "unix" {
