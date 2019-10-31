@@ -16,6 +16,9 @@ type GreylistdFilter struct{
 	opensmtpd.SessionTrackingMixin
 }
 
+func (g *GreylistdFilter) GetName() string {
+	return "GreylistdFilter"
+}
 
 func debug(format string, values... interface{}) {
 	if *debugOutput {
