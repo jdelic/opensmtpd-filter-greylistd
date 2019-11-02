@@ -1,3 +1,4 @@
+#!/bin/bash
 go build
 
 fpm \
@@ -12,4 +13,4 @@ fpm \
     -d "greylistd" \
     --description "Provides integration with greylistd for OpenSMTPD." \
     --url "https://github.com/jdelic/opensmtpd-filter-greylistd" \
-    filter-greylistd=/usr/lib/x86_64-linux-gnu/opensmtpd/filter-greylistd
+    opensmtpd-filter-greylistd=/usr/lib/x86_64-linux-gnu/opensmtpd/filter-greylistd
