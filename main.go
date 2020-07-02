@@ -27,7 +27,7 @@ func debug(format string, values... interface{}) {
 }
 
 
-func queryGreylistd(ip string, token string, sessionId string) {
+func queryGreylistd(ip string, ev opensmtpd.FilterEvent) {
 	conn, err := net.Dial("unix", *socketPath)
 	if err != nil {
 		log.Fatalf("Can't connect to Greylistd socket: %v", err)
@@ -45,34 +45,35 @@ func queryGreylistd(ip string, token string, sessionId string) {
 		log.Fatalf("Error while reading reply from Greylistd socket: %v", err)
 	}
 
+	responder := ev.Responder()
 	reply := replyBytes.String()
 	switch reply {
 	case "grey":
-		opensmtpd.Greylist(token, sessionId, fmt.Sprintf("%v greylisted. Try again later.", ip))
+		responder.Greylist(fmt.Sprintf("%v greylisted. Try again later.", ip))
 		return
 	case "black":
-		opensmtpd.HardReject(token, sessionId, fmt.Sprintf("%v blacklisted. Transmission denied.", ip))
+		responder.HardReject(fmt.Sprintf("%v blacklisted. Transmission denied.", ip))
 		return
 	case "white":
-		opensmtpd.Proceed(token, sessionId)
+		responder.Proceed()
 		return
 	}
 
 	debug("Greylistd returned an error or unknown string (%v). Returning temporary error.")
-	opensmtpd.SoftReject(token, sessionId, "There seems to be a technical problem on our end. " +
+	responder.SoftReject("There seems to be a technical problem on our end. " +
 		"Please try again.")
 }
 
 
-func (g *GreylistdFilter) Connect(fw opensmtpd.FilterWrapper, verb string, sh opensmtpd.SessionHolder, sessionId string, params []string) {
+func (g *GreylistdFilter) Connect(fw opensmtpd.FilterWrapper, event opensmtpd.FilterEvent) {
 	debug("Connect")
-	conn := sh.GetSession(sessionId).Src
+	conn := g.GetSession(event.GetSessionId()).Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
 		return
 	} else {
 		src := strings.Split(conn, ":")[0]
-		go queryGreylistd(src, params[0], sessionId)
+		go queryGreylistd(src, event)
 	}
 }
 
