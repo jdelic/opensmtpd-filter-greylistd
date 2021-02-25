@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blitiri.com.ar/go/spf"
 	"bytes"
 	"flag"
 	"fmt"
@@ -26,15 +27,32 @@ func debug(format string, values... interface{}) {
 	}
 }
 
+func spfResolve(ip, heloName, mailFrom string) bool {
+	res, _ := spf.CheckHostWithSender(net.ParseIP(ip), heloName, mailFrom)
+	if res == "pass" {
+		return true
+	}
+	return false
+}
 
-func queryGreylistd(ip string, ev opensmtpd.FilterEvent) {
+func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 	conn, err := net.Dial("unix", *socketPath)
 	if err != nil {
 		log.Fatalf("Can't connect to Greylistd socket: %v", err)
 	}
 	defer conn.Close()
 
-	_, err = conn.Write([]byte(fmt.Sprintf("update %s", ip)))
+	spfpass := spfResolve(session.SrcIp, session.HeloName, session.MailFrom)
+
+	if spfpass {
+		domain := strings.SplitN(session.MailFrom, "@", 2)[1]
+		if domain == "" {
+			domain = session.HeloName
+		}
+		_, err = conn.Write([]byte(fmt.Sprintf("update %s", domain)))
+	} else {
+		_, err = conn.Write([]byte(fmt.Sprintf("update %s", session.SrcIp)))
+	}
 	if err != nil {
 		log.Fatalf("Error while reading from Greylistd socket: %v", err)
 	}
@@ -49,10 +67,10 @@ func queryGreylistd(ip string, ev opensmtpd.FilterEvent) {
 	reply := replyBytes.String()
 	switch reply {
 	case "grey":
-		responder.Greylist(fmt.Sprintf("%v greylisted. Try again later.", ip))
+		responder.Greylist(fmt.Sprintf("%s greylisted. Try again later.", session.SrcIp))
 		return
 	case "black":
-		responder.HardReject(fmt.Sprintf("%v blacklisted. Transmission denied.", ip))
+		responder.HardReject(fmt.Sprintf("%s blacklisted. Transmission denied.", session.SrcIp))
 		return
 	case "white":
 		responder.Proceed()
@@ -64,16 +82,16 @@ func queryGreylistd(ip string, ev opensmtpd.FilterEvent) {
 		"Please try again.")
 }
 
-
-func (g *GreylistdFilter) Connect(fw opensmtpd.FilterWrapper, event opensmtpd.FilterEvent) {
-	debug("Connect")
-	conn := g.GetSession(event.GetSessionId()).Src
+func (g *GreylistdFilter) MailFrom(wrapper opensmtpd.FilterWrapper, event opensmtpd.FilterEvent) {
+	debug("MailFrom event received: %v", event.GetAtoms())
+	session := g.GetSession(event.GetSessionId())
+	conn := session.Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
+		event.Responder().Proceed()
 		return
 	} else {
-		src := strings.Split(conn, ":")[0]
-		go queryGreylistd(src, event)
+		go queryGreylistd(session, event)
 	}
 }
 
