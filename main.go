@@ -29,7 +29,7 @@ func debug(format string, values... interface{}) {
 
 func spfResolve(ip, heloName, mailFrom string) bool {
 	res, _ := spf.CheckHostWithSender(net.ParseIP(ip), heloName, mailFrom)
-	if res == "pass" {
+	if res == spf.Pass {
 		return true
 	}
 	return false
@@ -102,7 +102,33 @@ func main() {
 	log.SetOutput(os.Stderr)
 	debugOutput = flag.Bool("debug", false, "Enable debug output")
 	socketPath = flag.String("s", "/var/run/greylistd/socket", "The path to greylistd")
+	test := flag.String("test", "ip helo sender", "Test the filter against a domain")
 	flag.Parse()
+
+	if *test != "ip helo sender" {
+		strs := strings.SplitN(*test, " ", 3)
+
+		var srcIp, heloName, mailFrom string
+		if len(strs) >= 1 {
+			srcIp = strs[0]
+		}
+		if len(strs) >= 2 {
+			heloName = strs[1]
+		}
+		if len(strs) == 3 {
+			mailFrom = strs[2]
+		}
+
+		if mailFrom == "" {
+			res, err := spf.CheckHost(net.ParseIP(srcIp), heloName)
+			fmt.Println("CheckHost:", res, "err=", err)
+		} else {
+			res, err := spf.CheckHostWithSender(net.ParseIP(srcIp), heloName, mailFrom)
+			fmt.Println("CheckHostWithSender:", res, "err=", err)
+		}
+
+		return
+	}
 
 	debug("Greylistd Socket path is %s\n", *socketPath)
 
