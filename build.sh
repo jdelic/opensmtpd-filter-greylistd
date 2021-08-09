@@ -5,12 +5,12 @@ go build
 fpm \
     -s dir \
     -t deb \
-    -p opensmtpd-filter-greylistd_0.6.0.deb \
+    -p opensmtpd-filter-greylistd_0.6.1.deb \
     -n opensmtpd-filter-greylistd \
-    -v "0.6.0-0" \
+    -v "0.6.1-0" \
     -m "Jonas Maurus" \
-    -d "opensmtpd (>=6.6.0)" \
-    -d "opensmtpd (<<6.7)" \
+    -d "opensmtpd (>=6.8.0)" \
+    -d "opensmtpd (<<7.0)" \
     -d "greylistd" \
     --description "Provides integration with greylistd for OpenSMTPD." \
     --url "https://github.com/jdelic/opensmtpd-filter-greylistd" \
