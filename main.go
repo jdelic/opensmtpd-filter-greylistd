@@ -85,6 +85,13 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 func (g *GreylistdFilter) MailFrom(wrapper opensmtpd.FilterWrapper, event opensmtpd.FilterEvent) {
 	debug("MailFrom event received: %v", event.GetAtoms())
 	session := g.GetSession(event.GetSessionId())
+
+	// we don't greylist for authenticated sessions
+	if session.UserName != "" {
+		event.Responder().Proceed()
+		return
+	}
+
 	conn := session.Src
 	if conn[0:4] == "unix" {
 		debug("Unix socket.")
