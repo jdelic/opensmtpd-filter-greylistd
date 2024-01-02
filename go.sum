@@ -1,0 +1,4 @@
+blitiri.com.ar/go/spf v1.5.1 h1:CWUEasc44OrANJD8CzceRnRn1Jv0LttY68cYym2/pbE=
+blitiri.com.ar/go/spf v1.5.1/go.mod h1:E71N92TfL4+Yyd5lpKuE9CAF2pd4JrUq1xQfkTxoNdk=
+github.com/jdelic/opensmtpd-filters-go v0.0.0-20211022205454-4b70f98838c4 h1:hxG0NXO2PeukdU5eiHRdU5u/6Mds2gAy70KzyrVNxrQ=
+github.com/jdelic/opensmtpd-filters-go v0.0.0-20211022205454-4b70f98838c4/go.mod h1:kcrIosxo+xV+udiplcW62fW3suF1z4Rs5mYEL2IAjZ8=
