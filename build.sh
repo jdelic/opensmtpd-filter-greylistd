@@ -10,7 +10,7 @@ fpm \
     -v "0.6.1-0" \
     -m "Jonas Maurus" \
     -d "opensmtpd (>=6.8.0)" \
-    -d "opensmtpd (<<7.5)" \
+    -d "opensmtpd (<<8.0)" \
     -d "greylistd" \
     --description "Provides integration with greylistd for OpenSMTPD." \
     --url "https://github.com/jdelic/opensmtpd-filter-greylistd" \
