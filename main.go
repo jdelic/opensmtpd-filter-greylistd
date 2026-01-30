@@ -131,7 +131,7 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 
 	spfpass := spfResolve(session.SrcIp, session.HeloName, session.MailFrom)
 
-	if spfpass {
+	if spfpass && strings.Contains(session.MailFrom, "@") {
 		domain := strings.SplitN(session.MailFrom, "@", 2)[1]
 		if domain == "" {
 			domain = session.HeloName
