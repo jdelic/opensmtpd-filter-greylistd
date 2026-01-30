@@ -15,7 +15,7 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-type GreylistdFilter struct{
+type GreylistdFilter struct {
 	opensmtpd.SessionTrackingMixin
 }
 
@@ -23,7 +23,7 @@ func (g *GreylistdFilter) GetName() string {
 	return "GreylistdFilter"
 }
 
-func debug(format string, values... interface{}) {
+func debug(format string, values ...interface{}) {
 	if *debugOutput {
 		log.Printf(format, values...)
 	}
@@ -136,8 +136,11 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 		if domain == "" {
 			domain = session.HeloName
 		}
+
+		debug("SPF passed, querying greylistd for domain: %v", domain)
 		_, err = conn.Write([]byte(fmt.Sprintf("update %s", domain)))
 	} else {
+		debug("SPF failed or no sender, querying greylistd for IP: %v", session.SrcIp)
 		_, err = conn.Write([]byte(fmt.Sprintf("update %s", session.SrcIp)))
 	}
 	if err != nil {
@@ -154,12 +157,15 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 	reply := replyBytes.String()
 	switch reply {
 	case "grey":
+		debug("result: greylisted.")
 		responder.Greylist(fmt.Sprintf("%s greylisted. Try again later.", session.SrcIp))
 		return
 	case "black":
+		debug("result: blacklisted.")
 		responder.HardReject(fmt.Sprintf("%s blacklisted. Transmission denied.", session.SrcIp))
 		return
 	case "white":
+		debug("result: whitelisted.")
 		responder.Proceed()
 		return
 	}
