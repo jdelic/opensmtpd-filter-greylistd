@@ -1,16 +1,17 @@
 package main
 
 import (
-	"blitiri.com.ar/go/spf"
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/jdelic/opensmtpd-filters-go"
 	"io"
 	"log"
 	"net"
 	"os"
 	"strings"
+
+	"blitiri.com.ar/go/spf"
+	"github.com/jdelic/opensmtpd-filters-go"
 )
 
 type GreylistdFilter struct{
