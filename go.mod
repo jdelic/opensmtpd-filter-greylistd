@@ -10,4 +10,3 @@ require (
 	golang.org/x/net v0.49.0
 )
 
-replace github.com/jdelic/opensmtpd-filters-go => ../opensmtpd-filters-go
