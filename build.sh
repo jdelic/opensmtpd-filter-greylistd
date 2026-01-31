@@ -5,9 +5,9 @@ go build
 fpm \
     -s dir \
     -t deb \
-    -p opensmtpd-filter-greylistd_0.6.1.deb \
+    -p opensmtpd-filter-greylistd_0.6.2.deb \
     -n opensmtpd-filter-greylistd \
-    -v "0.6.1-0" \
+    -v "0.6.2-0" \
     -m "Jonas Maurus" \
     -d "opensmtpd (>=6.8.0)" \
     -d "opensmtpd (<<8.0)" \
