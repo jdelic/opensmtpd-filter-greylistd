@@ -76,50 +76,29 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 	if session.Rdns != "" {
 		etld1, etld2 := extractETLDs(session.Rdns)
 
-		if etld1 != "" {
-			debug("Querying greylistd for etld1: %v", etld1)
-			conn, err := net.Dial("unix", *socketPath)
-			if err != nil {
-				log.Fatalf("Can't connect to Greylistd socket: %v", err)
-			}
+		for _, etld := range []string{etld1, etld2} {
+			if etld != "" {
+				debug("Querying greylistd for etld1: %v", etld)
+				conn, err := net.Dial("unix", *socketPath)
+				if err != nil {
+					log.Fatalf("Can't connect to Greylistd socket: %v", err)
+				}
 
-			conn.Write([]byte(fmt.Sprintf("check %s", etld1)))
-			var etld1Reply bytes.Buffer
-			_, err = io.Copy(&etld1Reply, conn)
-			if err != nil {
-				log.Fatalf("Error while reading reply from Greylistd socket: %v", err)
-			}
-			conn.Close()
+				conn.Write([]byte(fmt.Sprintf("check %s", etld)))
+				var etldReply bytes.Buffer
+				_, err = io.Copy(&etldReply, conn)
+				if err != nil {
+					log.Fatalf("Error while reading reply from Greylistd socket: %v", err)
+				}
+				conn.Close()
 
-			if etld1Reply.String() == "white" {
-				debug("result: whitelisted.")
-				ev.Responder().Proceed()
-				return
+				if etldReply.String() == "white" {
+					debug("result: %v whitelisted.", etld)
+					ev.Responder().Proceed()
+					return
+				}
+				debug("no match etld %v", etld)
 			}
-			debug("no match etld1")
-		}
-
-		if etld2 != "" {
-			debug("Querying greylistd for etld2: %v", etld2)
-			conn, err := net.Dial("unix", *socketPath)
-			if err != nil {
-				log.Fatalf("Can't connect to Greylistd socket: %v", err)
-			}
-
-			conn.Write([]byte(fmt.Sprintf("check %s", etld2)))
-			var etld2Reply bytes.Buffer
-			_, err = io.Copy(&etld2Reply, conn)
-			if err != nil {
-				log.Fatalf("Error while reading reply from Greylistd socket: %v", err)
-			}
-			conn.Close()
-
-			if etld2Reply.String() == "white" {
-				debug("result: whitelisted.")
-				ev.Responder().Proceed()
-				return
-			}
-			debug("no match etld2")
 		}
 	}
 
