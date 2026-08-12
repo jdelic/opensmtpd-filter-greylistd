@@ -149,7 +149,7 @@ func queryGreylistd(session *opensmtpd.SMTPSession, ev opensmtpd.FilterEvent) {
 		return
 	}
 
-	debug("Greylistd returned an error or unknown string (%v). Returning temporary error.")
+	debug("Greylistd returned an error or unknown string (%v). Returning temporary error.", reply)
 	responder.SoftReject("There seems to be a technical problem on our end. " +
 		"Please try again.")
 }
