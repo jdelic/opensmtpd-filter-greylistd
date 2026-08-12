@@ -22,7 +22,14 @@ from the main archive, so first install the prerequisites:
     apt-get install -y opensmtpd
     apt-get install --no-install-recommends -y greylistd  # note the warning this gives about adapting permissions for your local MTA
 
-Second, **either** install from the packages created here:
+Second, install ``filter-greylistd`` itself, **either** from a pre-built package
+**or** by building it from source yourself.
+
+Installing the package
+~~~~~~~~~~~~~~~~~~~~~~~
+
+``opensmtpd-filter-greylistd`` is published as a Debian package for Trixie at
+repo.maurus.net:
 
 ::
 
@@ -30,15 +37,19 @@ Second, **either** install from the packages created here:
     echo "deb [signed-by=/etc/apt/keyrings/maurusnet-package-archive.gpg arch=amd64] http://repo.maurus.net/release/trixie mn-release main" > /etc/apt/sources.list.d/opensmtpd-greylistd.list
     apt-get update
     apt-get install opensmtpd-filter-greylistd
-    install /usr/lib/x86_64-linux-gnu/opensmtpd/filter-greylistd /usr/libexec/opensmtpd/filter-greylistd
 
-**or** install from source:
+Building from source
+~~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, build and install ``filter-greylistd`` yourself using ``go build``:
 
 ::
 
     sudo apt-get install --no-install-recommends golang
-    go install github.com/jdelic/opensmtpd-filter-greylistd@latest
-    sudo install ~/go/bin/opensmtpd-filter-greylistd /usr/libexec/opensmtpd/filter-greylistd
+    git clone https://github.com/jdelic/opensmtpd-filter-greylistd.git
+    cd opensmtpd-filter-greylistd
+    go build
+    sudo install opensmtpd-filter-greylistd /usr/libexec/opensmtpd/filter-greylistd
 
 
 Third, adapt the permissions, because greylistd only comes pre-configured to work with exim:
