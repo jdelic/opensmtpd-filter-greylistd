@@ -14,7 +14,9 @@ How to use this
 ---------------
 
 On Debian 13 (Trixie), both ``opensmtpd`` and ``greylistd`` are available directly
-from the main archive, so first install the prerequisites:
+from the main archive, so first install the prerequisites. ``--no-install-recommends``
+is important as apt may remove opensmtpd and install exim
+because of greylistd's package dependencies (see `Debian Bug 992064 <bug992064_>`__):
 
 ::
 
@@ -75,3 +77,4 @@ In your OpenSMTPD configuration activate ``filter-greylistd``:
 
 
 .. _osfgo: https://github.com/jdelic/opensmtpd-filters-go
+.. _bug992064: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=992064
