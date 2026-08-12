@@ -1,7 +1,7 @@
 blitiri.com.ar/go/spf v1.5.1 h1:CWUEasc44OrANJD8CzceRnRn1Jv0LttY68cYym2/pbE=
 blitiri.com.ar/go/spf v1.5.1/go.mod h1:E71N92TfL4+Yyd5lpKuE9CAF2pd4JrUq1xQfkTxoNdk=
-github.com/jdelic/opensmtpd-filters-go v0.1.0 h1:lEMUX9eSo3mhg0z7JPit1sv9VPHpU5cL6QqHXqSYey8=
-github.com/jdelic/opensmtpd-filters-go v0.1.0/go.mod h1:yQPUzhNoJv9PXPBsWNlgvKiTDU4AKzOe/mP5hyWcTVc=
+github.com/jdelic/opensmtpd-filters-go v0.1.1 h1:4ZJIJVwAEoNP8feWyHTVREUcNJH9K3MAPdLwP/zMY8E=
+github.com/jdelic/opensmtpd-filters-go v0.1.1/go.mod h1:yQPUzhNoJv9PXPBsWNlgvKiTDU4AKzOe/mP5hyWcTVc=
 golang.org/x/net v0.57.0 h1:K5+3DljvIuDG9/Jv9rvyMywYNFCQ9RSUY6OOTTkT+tE=
 golang.org/x/net v0.57.0/go.mod h1:KpXc8iv+r3XplLAG/f7Jsf9RPszJzdR0f58q9vGOuEU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
