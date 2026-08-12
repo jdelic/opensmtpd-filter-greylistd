@@ -22,7 +22,9 @@ from the main archive, so first install the prerequisites:
     apt-get install -y opensmtpd
     apt-get install --no-install-recommends -y greylistd  # note the warning this gives about adapting permissions for your local MTA
 
-Second, **either** install from the packages created here:
+Second, **either** install from the packages created here (note this repository
+currently only publishes Buster packages, but they still work on Trixie since
+this project has no Buster-specific dependencies):
 
 ::
 
