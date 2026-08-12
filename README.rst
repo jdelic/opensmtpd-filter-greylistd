@@ -22,13 +22,12 @@ from the main archive, so first install the prerequisites:
     apt-get install -y opensmtpd
     apt-get install --no-install-recommends -y greylistd  # note the warning this gives about adapting permissions for your local MTA
 
-Second, **either** install from the packages created here (note this repository
-currently only publishes Buster packages, but they still work on Trixie since
-this project has no Buster-specific dependencies):
+Second, **either** install from the packages created here:
 
 ::
 
-    echo "deb http://repo.maurus.net/buster/opensmtpd/ mn-opensmtpd main" > /etc/apt/sources.list.d/opensmtpd-greylistd.list
+    curl -o /etc/apt/keyrings/maurusnet-package-archive.gpg http://repo.maurus.net/02CBD940A78049AF.pem
+    echo "deb [signed-by=/etc/apt/keyrings/maurusnet-package-archive.gpg arch=amd64] http://repo.maurus.net/release/trixie mn-release main" > /etc/apt/sources.list.d/opensmtpd-greylistd.list
     apt-get update
     apt-get install opensmtpd-filter-greylistd
     install /usr/lib/x86_64-linux-gnu/opensmtpd/filter-greylistd /usr/libexec/opensmtpd/filter-greylistd
